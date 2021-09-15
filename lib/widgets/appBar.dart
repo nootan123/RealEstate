@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-import 'package:realestate/widgets/search.dart';
-import 'package:realestate/widgets/searchWithIcons.dart';
+
 
 class AppBarwid extends StatefulWidget implements PreferredSizeWidget {
   @override

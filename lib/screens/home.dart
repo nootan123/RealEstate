@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter/rendering.dart';
 import 'package:realestate/screens/mapScreen.dart';
+import 'package:realestate/service/lists.dart';
 import 'package:realestate/widgets/appBar.dart';
 import 'package:realestate/widgets/mainCatHouse.dart';
 import 'package:realestate/widgets/offerBanner.dart';
@@ -16,14 +17,24 @@ class Home extends StatefulWidget {
 }
 
 bool activeSearch = false;
+String swipeDirection = '';
 
-List<String> categories = ["5 Star", "4 Star", "3 Star", "2 Star", "1 Star"];
+List<String> categories = ["1 Star", "2 Star", "3 Star", "4 Star", "5 Star"];
 
 int selectedIndex = 0;
 
+ScrollController _scrollController = new ScrollController();
+
 class _HomeState extends State<Home> {
   @override
+  void initState() {
+    super.initState();
+    // ScrollController _scrollController = new ScrollController();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBarwid(),
       body: SingleChildScrollView(
@@ -104,12 +115,17 @@ class _HomeState extends State<Home> {
                 activeSearch == false
                     ? Column(
                         children: [
+                          SizedBox(height: 20),
                           OfferBanner(),
                           MainCatHouse(),
+                          //
+                          //list by star
+                          //
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: SizedBox(
                               height: 35,
+                              // width: MediaQuery.of(context).size.width,
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: categories.length,
@@ -121,11 +137,11 @@ class _HomeState extends State<Home> {
                                     });
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 35),
+                                    padding:
+                                        EdgeInsets.only(right: width * 0.1),
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                          CrossAxisAlignment.center,
                                       children: <Widget>[
                                         Text(
                                           categories[index],
@@ -140,7 +156,10 @@ class _HomeState extends State<Home> {
                                         Container(
                                           margin: EdgeInsets.only(top: 7),
                                           height: 3,
-                                          width: 50,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.1,
                                           color: selectedIndex == index
                                               ? Colors.deepPurple
                                               : Colors.transparent,
@@ -152,30 +171,51 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child: ListView(
-                              children: [
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                HotelDetail(),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                HotelDetail(),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                HotelDetail(),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                HotelDetail(),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                              ],
+                          // hotel list according to stars
+                          GestureDetector(
+                            onPanUpdate: (details) {
+                              swipeDirection =
+                                  details.delta.dx < 0 ? 'left' : 'right';
+                            },
+                            onPanEnd: (details) {
+                              // Swiping in right direction.
+                              if (swipeDirection == 'right' &&
+                                  selectedIndex > 0) {
+                                setState(() {
+                                  selectedIndex--;
+                                  _scrollController.animateTo(
+                                      width * 0.25 * selectedIndex,
+                                      duration: new Duration(seconds: 2),
+                                      curve: Curves.ease);
+                                  print(selectedIndex);
+                                });
+                              }
+
+                              // Swiping in left direction.
+                              if (swipeDirection == 'left' &&
+                                  selectedIndex < 4) {
+                                setState(() {
+                                  selectedIndex++;
+                                  print(selectedIndex);
+                                });
+                              }
+                            },
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.6,
+                              child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                itemCount: hotels.length,
+                                itemBuilder: (context, index) {
+                                  if (hotels[index].star == selectedIndex + 1) {
+                                    return HotelDetail(
+                                        context,
+                                        hotels[index].imgURL,
+                                        hotels[index].title,
+                                        hotels[index].detail);
+                                  } else
+                                    return Container();
+                                },
+                              ),
                             ),
                           ),
                         ],
@@ -189,21 +229,21 @@ class _HomeState extends State<Home> {
                           SizedBox(height: 30),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.75,
-                            child: ListView(
-                              children: [
-                                SearchHotelDetail(),
-                                SearchHotelDetail(),
-                                SearchHotelDetail(),
-                                SearchHotelDetail(),
-                                SearchHotelDetail(),
-                                SearchHotelDetail(),
-                                SearchHotelDetail(),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                              ],
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 18.0),
+                              child: ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                itemCount: hotels.length,
+                                itemBuilder: (context, index) {
+                                  return SearchHotelDetail(
+                                      context,
+                                      hotels[index].imgURL,
+                                      hotels[index].title,
+                                      hotels[index].detail);
+                                },
+                              ),
                             ),
-                          )
+                          ),
                         ],
                       ),
               ],
@@ -224,6 +264,9 @@ Widget titleText(
   );
 }
 
+//
+//
+// Modal
 class showModal extends StatefulWidget {
   const showModal({Key? key}) : super(key: key);
 
@@ -236,6 +279,7 @@ var selectedRange = RangeValues(540, 700);
 class _showModalState extends State<showModal> {
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
     return RotatedBox(
       quarterTurns: 3,
       child: IconButton(
@@ -252,94 +296,113 @@ class _showModalState extends State<showModal> {
                 builder: (context) {
                   return StatefulBuilder(
                       builder: (BuildContext context, StateSetter setState) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Center(
-                            child: SizedBox(
-                              width: 70,
-                              child: Container(
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(20),
+                    return SizedBox(
+                      height: height * 0.8,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Center(
+                              child: SizedBox(
+                                width: 70,
+                                child: Container(
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(20),
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          boldText('Search your location'),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          searchWithIcons(context, Icons.pin_drop_outlined,
-                              Icons.expand_more, 'Yogyakarta, ID'),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          boldText("Type of house"),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          searchWithIcons(context, Icons.home_outlined,
-                              Icons.expand_more, 'Type of house'),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          boldText('Filter my price'),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          SliderTheme(
-                            data: SliderThemeData(
-                              thumbShape:
-                                  RoundSliderThumbShape(enabledThumbRadius: 20),
-                            ),
-                            child: RangeSlider(
-                              values: selectedRange,
-                              onChanged: (RangeValues newRange) {
-                                setState(() {
-                                  selectedRange = newRange;
-                                });
-                              },
-                              min: 0.0,
-                              max: 900.0,
-                              divisions: 5,
-                              labels: RangeLabels(
-                                  '\$${selectedRange.start.toString()} ',
-                                  '\$${selectedRange.end}'),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 50),
-                              primary: Colors.blueGrey.shade800,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                            Container(
+                              height: height * 0.5,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    boldText('Search your location'),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    searchWithIcons(
+                                        context,
+                                        Icons.pin_drop_outlined,
+                                        Icons.expand_more,
+                                        'Yogyakarta, ID'),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    boldText("Type of house"),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    searchWithIcons(
+                                        context,
+                                        Icons.home_outlined,
+                                        Icons.expand_more,
+                                        'Type of house'),
+                                    SizedBox(
+                                      height: 30,
+                                    ),
+                                    boldText('Filter my price'),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    SliderTheme(
+                                      data: SliderThemeData(
+                                        thumbShape: RoundSliderThumbShape(
+                                            enabledThumbRadius: 20),
+                                      ),
+                                      child: RangeSlider(
+                                        values: selectedRange,
+                                        onChanged: (RangeValues newRange) {
+                                          setState(() {
+                                            selectedRange = newRange;
+                                          });
+                                        },
+                                        min: 0.0,
+                                        max: 900.0,
+                                        divisions: 5,
+                                        labels: RangeLabels(
+                                            '\$${selectedRange.start.toString()} ',
+                                            '\$${selectedRange.end}'),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        minimumSize: Size(double.infinity, 50),
+                                        primary: Colors.blueGrey.shade800,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                      child: Text(
+                                        "Confirm",
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ),
+                                    // SizedBox(
+                                    //   height: 30,
+                                    // ),
+                                  ],
+                                ),
                               ),
                             ),
-                            onPressed: () {},
-                            child: Text(
-                              "Confirm",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 30,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   });

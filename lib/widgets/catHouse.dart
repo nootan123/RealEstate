@@ -1,21 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:realestate/screens/detail.dart';
+import 'package:realestate/service/hotList.dart';
+import 'package:realestate/service/lists.dart';
 
 class CategoryHouse extends StatelessWidget {
-  List<HotelList> hotels = [
-    HotelList(
-        title: "Modern",
-        detail: "More than 504,326 House waiting for your rent or buy",
-        imgURL: "lib/assets/hotel1.jpg"),
-    HotelList(
-        title: "Classic",
-        detail: "This is detail for classic han 504,326 House waiting ",
-        imgURL: "lib/assets/hotel2.jpg"),
-    HotelList(
-        title: "Other",
-        detail: "This is detail for classic han 504,326 House waiting ",
-        imgURL: "lib/assets/hotel3.jpg"),
-  ];
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -23,7 +11,7 @@ class CategoryHouse extends StatelessWidget {
       width: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: hotels.length,
+        itemCount: 4,
         itemBuilder: (context, index) {
           return GestureDetector(
             child: Padding(
@@ -52,21 +40,34 @@ class CategoryHouse extends StatelessWidget {
                       children: [
                         Text(
                           hotels[index].title,
+                          maxLines: 2,
+                          overflow: TextOverflow.fade,
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        Text(
-                          hotels[index].detail,
-                          style: TextStyle(color: Colors.grey),
+                        SizedBox(
+                          width: 200,
+                          child: Text(
+                            hotels[index].detail,
+                            overflow: TextOverflow.fade,
+                            maxLines: 2,
+                            style: TextStyle(color: Colors.grey),
+                          ),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             ElevatedButton(
                               onPressed: () {
-                                Navigator.pushNamed(
+                                Navigator.push(
                                   context,
-                                  '/DetailPage',
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailPage(
+                                      imgURL: hotels[index].imgURL,
+                                      title: hotels[index].title,
+                                      detail: hotels[index].detail,
+                                    ),
+                                  ),
                                 );
                               },
                               child: Text('from \$30/month'),
@@ -87,7 +88,16 @@ class CategoryHouse extends StatelessWidget {
                                     color: Colors.grey[200]),
                                 child: IconButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(context, '/DetailPage');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailPage(
+                                          imgURL: hotels[index].imgURL,
+                                          title: hotels[index].title,
+                                          detail: hotels[index].detail,
+                                        ),
+                                      ),
+                                    );
                                   },
                                   icon: Icon(
                                     Icons.arrow_forward,
@@ -105,18 +115,20 @@ class CategoryHouse extends StatelessWidget {
               ),
             ),
             onTap: () {
-              Navigator.pushNamed(context, '/DetailPage');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailPage(
+                    imgURL: hotels[index].imgURL,
+                    title: hotels[index].title,
+                    detail: hotels[index].detail,
+                  ),
+                ),
+              );
             },
           );
         },
       ),
     );
   }
-}
-
-class HotelList {
-  String title;
-  String detail;
-  String imgURL;
-  HotelList({required this.title, required this.detail, required this.imgURL});
 }

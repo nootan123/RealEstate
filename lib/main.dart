@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:realestate/screens/detail.dart';
 import 'package:realestate/screens/home.dart';
 import 'package:realestate/screens/mapScreen.dart';
 
@@ -10,7 +9,7 @@ void main() {
       // home: Home(),
       routes: {
         '/': (context) => Home(),
-        '/DetailPage': (context) => DetailPage(),
+        // '/DetailPage': (context) => DetailPage(imgURL),
         '/MapScreen': (context) => MapPage(),
       },
     ),

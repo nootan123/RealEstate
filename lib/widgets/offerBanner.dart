@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:realestate/screens/detail.dart';
+import 'package:realestate/service/lists.dart';
 
 class OfferBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamed(context, '/DetailPage');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailPage(
+              imgURL: hotels[1].imgURL,
+              title: hotels[0].title,
+              detail: hotels[0].detail,
+            ),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(
@@ -14,7 +25,7 @@ class OfferBanner extends StatelessWidget {
           ),
           color: Colors.blueAccent,
           image: DecorationImage(
-            image: AssetImage('lib/assets/hotel1.jpg'),
+            image: AssetImage(hotels[0].imgURL),
             fit: BoxFit.cover,
           ),
         ),

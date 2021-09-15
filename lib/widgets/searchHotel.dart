@@ -1,81 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:realestate/screens/detail.dart';
 
-class SearchHotelDetail extends StatelessWidget {
-  const SearchHotelDetail({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, "/DetailPage");
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(top: 18.0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.all(
-              Radius.circular(10),
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width * 0.3,
-                height: 115,
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(10),
-                  ),
-                  image: DecorationImage(
-                    image: AssetImage('lib/assets/hotel1.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.only(left: 10, top: 10, bottom: 20),
-                // width: MediaQuery.of(context).size.width * 0.57,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 5,
-                    ),
-                    titleText(
-                        "Prime Park Hotel", 18, Colors.black, FontWeight.bold),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    titleText("Plot 58, Block C Hotel Motel Zone", 12,
-                        Colors.grey, FontWeight.normal),
-                    Row(
-                      children: [
-                        iconCount(Icons.bed, "4"),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        iconCount(Icons.pool, "1"),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        iconCount(Icons.hot_tub, "1"),
-                      ],
-                    ),
-                    titleText(
-                        "from \$32/month", 15, Colors.black, FontWeight.bold),
-                  ],
-                ),
-              )
-            ],
+Widget SearchHotelDetail(
+    BuildContext context, String imgURL, String title, String detail) {
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DetailPage(
+            imgURL: imgURL,
+            title: title,
+            detail: detail,
           ),
         ),
+      );
+    },
+    child: Padding(
+      padding: const EdgeInsets.only(top: 18.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.all(
+            Radius.circular(10),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.3,
+              height: 115,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10),
+                ),
+                image: DecorationImage(
+                  image: AssetImage(imgURL),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.only(left: 10, top: 10, bottom: 20),
+              // width: MediaQuery.of(context).size.width * 0.57,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 5,
+                  ),
+                  titleText(title, 18, Colors.black, FontWeight.bold),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  titleText(detail, 12, Colors.grey, FontWeight.normal),
+                  Row(
+                    children: [
+                      iconCount(Icons.bed, "4"),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      iconCount(Icons.pool, "1"),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      iconCount(Icons.hot_tub, "1"),
+                    ],
+                  ),
+                  titleText(
+                      "from \$32/month", 15, Colors.black, FontWeight.bold),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 Widget iconCount(IconData icon, String itemNumber) {
@@ -112,9 +114,14 @@ Widget iconContainer(IconData icon) {
 
 Widget titleText(
     String title, double titleSize, Color titleColor, FontWeight boldRNormal) {
-  return Text(
-    title,
-    style: TextStyle(
-        fontSize: titleSize, color: titleColor, fontWeight: boldRNormal),
+  return Container(
+    width: 220,
+    child: Text(
+      title,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 2,
+      style: TextStyle(
+          fontSize: titleSize, color: titleColor, fontWeight: boldRNormal),
+    ),
   );
 }
